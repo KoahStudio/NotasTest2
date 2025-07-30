@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Calculadora de Notas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f172a;
+            --accent: #e879f9;
+            --accent-soft: #f3e8ff;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(232, 121, 249, 0.3);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(232, 121, 249, 0.2);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--accent) 0%, #c084fc 100%);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 8px 25px rgba(232, 121, 249, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin-bottom: 1.5rem;
+        }
+
+        .rules {
+            background: linear-gradient(135deg, rgba(232, 121, 249, 0.1) 0%, rgba(192, 132, 252, 0.1) 100%);
+            border: 1px solid rgba(232, 121, 249, 0.3);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .rules h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .subject-input {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .subject-input:hover {
+            border-color: var(--accent);
+        }
+
+        .subject-input label {
+            display: block;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .subject-input input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .subject-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(232, 121, 249, 0.2);
+        }
+
+        .results-table {
+            overflow-x: auto;
+            border-radius: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--accent);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: rgba(232, 121, 249, 0.05);
+        }
+
+        .nota-a {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .nota-r {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .nota-r.zero {
+            color: var(--danger);
+        }
+
+        .emoji {
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, var(--danger) 0%, #f87171 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 12px 24px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                gap: 0.25rem;
+            }
+            
+            .tab {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .sparkle {
+            position: relative;
+        }
+
+        .sparkle::after {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="sparkle">✨ Calculadora de Notas</h1>
+            <p class="subtitle">Organize suas notas de forma kawaii e eficiente! 🌸</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('geral')">
+                <span class="emoji">🌟</span> Geral
+            </div>
+            <div class="tab" onclick="showTab('koah')">
+                <span class="emoji">🦄</span> Koah
+            </div>
+            <div class="tab" onclick="showTab('civ')">
+                <span class="emoji">🌸</span> Civ
+            </div>
+        </div>
+
+        <!-- Aba Geral -->
+        <div id="geral" class="tab-content active">
+            <div class="rules">
+                <h3><span class="emoji">📚</span> Regras de Cálculo</h3>
+                <p><strong>Nota A:</strong> Soma das notas da pessoa na matéria</p>
+                <p><strong>Nota R:</strong> 180 - Nota A (mínimo 0)</p>
+                <p style="margin-top: 1rem; font-style: italic; color: var(--text-muted);">
+                    💡 Digite suas notas abaixo e veja os cálculos em tempo real!
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--accent); margin-bottom: 1.5rem;">
+                    <span class="emoji">📝</span> Insira suas Notas
+                </h3>
+                
+                <div class="form-grid">
+                    <div class="subject-input">
+                        <label for="artes">🎨 Artes</label>
+                        <input type="number" id="artes" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="biologia">🧬 Biologia</label>
+                        <input type="number" id="biologia" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="educacao-fisica">⚽ Educação Física</label>
+                        <input type="number" id="educacao-fisica" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="filosofia">🤔 Filosofia</label>
+                        <input type="number" id="filosofia" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="fisica">⚛️ Física</label>
+                        <input type="number" id="fisica" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="geografia">🌍 Geografia</label>
+                        <input type="number" id="geografia" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="historia">📜 História</label>
+                        <input type="number" id="historia" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="ingles">🇺🇸 Língua Inglesa</label>
+                        <input type="number" id="ingles" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="portugues">📖 Língua Portuguesa</label>
+                        <input type="number" id="portugues" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="matematica">🔢 Matemática</label>
+                        <input type="number" id="matematica" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="quimica">🧪 Química</label>
+                        <input type="number" id="quimica" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="educacao-financeira">💰 Educação Financeira</label>
+                        <input type="number" id="educacao-financeira" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                    <div class="subject-input">
+                        <label for="projeto-vida">🌟 Projeto de Vida</label>
+                        <input type="number" id="projeto-vida" min="0" placeholder="0" oninput="updateResults()">
+                    </div>
+                </div>
+
+                <button class="clear-btn" onclick="clearAll()">
+                    <span class="emoji">🗑️</span> Limpar Tudo
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--accent); margin-bottom: 1.5rem;">
+                    <span class="emoji">📊</span> Resultados
+                </h3>
+                <div class="results-table">
+                    <table id="results-table">
+                        <thead>
+                            <tr>
+                                <th>Matéria</th>
+                                <th>Nota A</th>
+                                <th>Nota R</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba Koah -->
+        <div id="koah" class="tab-content">
+            <div class="card">
+                <h3 style="color: var(--accent); margin-bottom: 1.5rem;">
+                    <span class="emoji">🦄</span> Notas da Koah
+                </h3>
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Matéria</th>
+                                <th>Nota A</th>
+                                <th>Nota R</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>🎨 Artes</td><td class="nota-a">115</td><td class="nota-r">65</td></tr>
+                            <tr><td>🧬 Biologia</td><td class="nota-a">100</td><td class="nota-r">80</td></tr>
+                            <tr><td>⚽ Educação Física</td><td class="nota-a">125</td><td class="nota-r">55</td></tr>
+                            <tr><td>🤔 Filosofia</td><td class="nota-a">145</td><td class="nota-r">35</td></tr>
+                            <tr><td>⚛️ Física</td><td class="nota-a">87</td><td class="nota-r">93</td></tr>
+                            <tr><td>🌍 Geografia</td><td class="nota-a">195</td><td class="nota-r zero">0</td></tr>
+                            <tr><td>📜 História</td><td class="nota-a">169</td><td class="nota-r">11</td></tr>
+                            <tr><td>🇺🇸 Língua Inglesa</td><td class="nota-a">111</td><td class="nota-r">69</td></tr>
+                            <tr><td>📖 Língua Portuguesa</td><td class="nota-a">160</td><td class="nota-r">20</td></tr>
+                            <tr><td>🔢 Matemática</td><td class="nota-a">103</td><td class="nota-r">77</td></tr>
+                            <tr><td>🧪 Química</td><td class="nota-a">90</td><td class="nota-r">90</td></tr>
+                            <tr><td>💰 Educação Financeira</td><td class="nota-a">113</td><td class="nota-r">67</td></tr>
+                            <tr><td>🌟 Projeto de Vida</td><td class="nota-a">185</td><td class="nota-r zero">0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba Civ -->
+        <div id="civ" class="tab-content">
+            <div class="card">
+                <h3 style="color: var(--accent); margin-bottom: 1.5rem;">
+                    <span class="emoji">🌸</span> Notas da Victória
+                </h3>
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Matéria</th>
+                                <th>Nota A</th>
+                                <th>Nota R</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>🎨 Artes</td><td class="nota-a">105</td><td class="nota-r">75</td></tr>
+                            <tr><td>🧬 Biologia</td><td class="nota-a">82</td><td class="nota-r">98</td></tr>
+                            <tr><td>⚽ Educação Física</td><td class="nota-a">106</td><td class="nota-r">74</td></tr>
+                            <tr><td>🤔 Filosofia</td><td class="nota-a">145</td><td class="nota-r">35</td></tr>
+                            <tr><td>⚛️ Física</td><td class="nota-a">85</td><td class="nota-r">95</td></tr>
+                            <tr><td>🌍 Geografia</td><td class="nota-a">200</td><td class="nota-r zero">0</td></tr>
+                            <tr><td>📜 História</td><td class="nota-a">156</td><td class="nota-r">24</td></tr>
+                            <tr><td>🇺🇸 Língua Inglesa</td><td class="nota-a">123</td><td class="nota-r">57</td></tr>
+                            <tr><td>📖 Língua Portuguesa</td><td class="nota-a">178</td><td class="nota-r">2</td></tr>
+                            <tr><td>🔢 Matemática</td><td class="nota-a">118</td><td class="nota-r">62</td></tr>
+                            <tr><td>🧪 Química</td><td class="nota-a">103</td><td class="nota-r">77</td></tr>
+                            <tr><td>💰 Educação Financeira</td><td class="nota-a">101</td><td class="nota-r">79</td></tr>
+                            <tr><td>🌟 Projeto de Vida</td><td class="nota-a">185</td><td class="nota-r zero">0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const subjects = [
+            { id: 'artes', name: '🎨 Artes' },
+            { id: 'biologia', name: '🧬 Biologia' },
+            { id: 'educacao-fisica', name: '⚽ Educação Física' },
+            { id: 'filosofia', name: '🤔 Filosofia' },
+            { id: 'fisica', name: '⚛️ Física' },
+            { id: 'geografia', name: '🌍 Geografia' },
+            { id: 'historia', name: '📜 História' },
+            { id: 'ingles', name: '🇺🇸 Língua Inglesa' },
+            { id: 'portugues', name: '📖 Língua Portuguesa' },
+            { id: 'matematica', name: '🔢 Matemática' },
+            { id: 'quimica', name: '🧪 Química' },
+            { id: 'educacao-financeira', name: '💰 Educação Financeira' },
+            { id: 'projeto-vida', name: '🌟 Projeto de Vida' }
+        ];
+
+        function showTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function updateResults() {
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = '';
+
+            subjects.forEach(subject => {
+                const input = document.getElementById(subject.id);
+                const notaA = parseInt(input.value) || 0;
+                const notaR = Math.max(0, 180 - notaA);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subject.name}</td>
+                    <td class="nota-a">${notaA}</td>
+                    <td class="nota-r ${notaR === 0 ? 'zero' : ''}">${notaR}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function clearAll() {
+            subjects.forEach(subject => {
+                document.getElementById(subject.id).value = '';
+            });
+            updateResults();
+        }
+
+        // Initialize results table
+        updateResults();
+    </script>
+</body>
+</html>
